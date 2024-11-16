@@ -184,20 +184,37 @@ def create_filters(date=None, start_date=None, end_date=None,
     
     filters = []
 
-    conditions = [
-        (date, DateFilter(operator.eq, date)),
-        (start_date, DateFilter(operator.ge, start_date)),
-        (end_date, DateFilter(operator.le, end_date)),
-        (distance_min, DistanceFilter(operator.ge, distance_min)),
-        (distance_max, DistanceFilter(operator.le, distance_max)),
-        (velocity_min, VelocityFilter(operator.ge, velocity_min)),
-        (velocity_max, VelocityFilter(operator.le, velocity_max)),
-        (diameter_min, DiameterFilter(operator.ge, diameter_min)),
-        (diameter_max, DiameterFilter(operator.le, diameter_max)),
-        (hazardous is not None, HazardousFilter(operator.eq, hazardous))
-    ]
+    # Create Date Filters
+    if date:
+        filters.append(DateFilter(operator.eq, date))  # Date must match exactly
+    if start_date:
+        filters.append(DateFilter(operator.ge, start_date))  # Greater than or equal to start_date
+    if end_date:
+        filters.append(DateFilter(operator.le, end_date))  # Less than or equal to end_date
+    
+    # Create Distance Filters
+    if distance_min is not None:
+        filters.append(DistanceFilter(operator.ge, distance_min))  # Distance >= distance_min
+    if distance_max is not None:
+        filters.append(DistanceFilter(operator.le, distance_max))  # Distance <= distance_max
 
-    filters = [filter_instance for condition, filter_instance in conditions if i]
+    # Create Velocity Filters
+    if velocity_min is not None:
+        filters.append(VelocityFilter(operator.ge, velocity_min))  # Velocity >= velocity_min
+    if velocity_max is not None:
+        filters.append(VelocityFilter(operator.le, velocity_max))  # Velocity <= velocity_max
+
+    # Create Diameter Filters
+    if diameter_min is not None:
+        filters.append(DiameterFilter(operator.ge, diameter_min))  # Diameter >= diameter_min
+    if diameter_max is not None:
+        filters.append(DiameterFilter(operator.le, diameter_max))  # Diameter <= diameter_max
+
+    # Create Hazardous Filters
+    if hazardous is not None:
+        op = operator.eq if hazardous else operator.ne
+        filters.append(HazardousFilter(op, hazardous))  # Hazardous == hazardous (True or False)
+
     return filters
 
 
@@ -219,6 +236,6 @@ def limit(iterator, n=None):
         for i, x in enumerate(iterator):
             if i < n:
                 yield x
-    git remote add origin https://github.com/Khalidbinorayir/NEO.git
+    
 
  
