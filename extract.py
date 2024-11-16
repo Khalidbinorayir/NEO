@@ -35,7 +35,7 @@ def load_neos(neo_csv_path: Path) -> List[NearEarthObject]:
             designation = row['pdes']
             name = row['name']
             diameter = float(row['diameter']) if row['diameter'] else float('nan')  # Handle missing diameter
-            hazardous = row['pha'] == 'Y'  # Assuming 'Y' means hazardous, 'N' means not hazardous
+            hazardous = row['pha'] == 'Y'  
             
             # Create a NearEarthObject instance
             neo = NearEarthObject(designation, name, diameter, hazardous)
