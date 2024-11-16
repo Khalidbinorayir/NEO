@@ -44,12 +44,14 @@ class NearEarthObject:
         self.name = info.get("name")
         self.diameter = float(info.get("diameter", float("nan")))
         self.hazardous = info.get("hazardous")
-
         self.approaches = []
-
+       
     @property
     def fullname(self):
-        return f"{self.designation} ({self.name})" if self.name else self.designation
+        """Return a representation of the full name of this NEO."""
+        if self.name:
+            return f"{self.designation} ({self.name})"
+        return f"{self.designation}"
 
 
     def __str__(self):
@@ -71,10 +73,10 @@ class NearEarthObject:
     def serialize(self) -> dict:
     """Return a dictionary representation of the object's attributes."""
         return {
-            "designation": self.designation,
-            "name": self.name,
-            "diameter_km": self.diameter,
-            "potentially_hazardous": self.hazardous,
+            "Designation": self.designation,
+            "Name": self.name,
+            "Diameter_km": self.diameter,
+            "Potentially_hazardous": self.hazardous,
         }
 
 
@@ -99,17 +101,38 @@ class CloseApproach:
         :param info: A dictionary of excess keyword arguments supplied to the constructor.
         """
 
-        self._designation = info.get('designation')
-        self.time = cd_to_datetime(info.get('time')) if info.get('time') else None
-        self.distance = info.get("distance", float("nan"))
-        self.velocity = info.get("velocity", float("nan"))
 
-        # Create an attribute for the referenced NEO, initially set to None.
-        self.neo = info.get('neo')
+        self._designation = info.get("designation")
+
+        # Check validity of time
+        self.time = info.get("time")
+        if self.time:
+            try:
+                # Convert 'time' to datetime
+                self.time = cd_to_datetime(self.time)
+                # Ensure that 'time' is a datetime object
+                if not isinstance(self.time, datetime.datetime):
+                    raise ValueError(f"Invalid 'time' value: Expected datetime, got {type(self.time)}")
+            except Exception as e:
+                # Handle any conversion issues
+                raise ValueError(f"Failed to convert 'time' to datetime: {e}")
+
+        # assign 'distance' and 'velocity' to default values and validation
+        self.distance = info.get("distance", math.nan)
+        self.velocity = info.get("velocity", math.nan)
+
+        if not isinstance(self.distance, float):
+            raise ValueError(f"Invalid 'distance' value: Expected float, got {type(self.distance)}")
+        if not isinstance(self.velocity, float):
+            raise ValueError(f"Invalid 'velocity' value: Expected float, got {type(self.velocity)}")
+
+        # Handle 'neo' assignment, ensuring it's set to None if missing
+        self.neo = info.get("neo", None)
 
         
         
-        @property
+        
+    @property
     def designation(self):
         """Get designation.
         
@@ -149,9 +172,9 @@ class CloseApproach:
     def serialize(self):
     """Return a dictionary representation of the object's attributes."""
         return {
-            "datetime_utc": datetime_to_str(self.time),
-            "distance_au": self.distance,
-            "velocity_km_s": self.velocity,
+            "Datetime_utc": datetime_to_str(self.time),
+            "Distance_au": self.distance,
+            "Velocity_km_s": self.velocity,
         }
 
         
