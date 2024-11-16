@@ -73,10 +73,10 @@ class NearEarthObject:
     def serialize(self) -> dict:
     """Return a dictionary representation of the object's attributes."""
         return {
-            "Designation": self.designation,
-            "Name": self.name,
-            "Diameter_km": self.diameter,
-            "Potentially_hazardous": self.hazardous,
+            "designation": self.designation,
+            "name": self.name,
+            "diameter_km": self.diameter,
+            "potentially_hazardous": self.hazardous,
         }
 
 
@@ -172,9 +172,9 @@ class CloseApproach:
     def serialize(self):
     """Return a dictionary representation of the object's attributes."""
         return {
-            "Datetime_utc": datetime_to_str(self.time),
-            "Distance_au": self.distance,
-            "Velocity_km_s": self.velocity,
+            "datetime_utc": datetime_to_str(self.time),
+            "distance_au": self.distance,
+            "velocity_km_s": self.velocity,
         }
 
         
