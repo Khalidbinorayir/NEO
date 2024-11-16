@@ -14,60 +14,61 @@ You'll edit this file in Task 2.
 """
 import csv
 import json
-
+from pathlib import Path
+from typing import List
 from models import NearEarthObject, CloseApproach
 
 
-def load_neos(neo_csv_path):
+def load_neos(neo_csv_path: Path) -> List[NearEarthObject]:
     """Read near-Earth object information from a CSV file.
 
     :param neo_csv_path: A path to a CSV file containing data about near-Earth objects.
     :return: A collection of `NearEarthObject`s.
     """
-    with open(neo_csv_path, "r") as f:
+    neos = []
+    
+     with open(neo_csv_path, mode='r', newline='') as csvfile:
+         reader = csv.DictReader(csvfile)  # Read the CSV as a dictionary for each row
         
-        reader = csv.DictReader(f)
-        neos = []
-        for line in reader:
-            line["name"] = line["name"] if line["name"] != '' else None
-            line["diameter"] = float(line["diameter"]) if line["diameter"] else None
-            line["pha"] = False if line["pha"] in ["", "N"] else True
-            try:
-                near_earth_object = NearEarthObject(
-                    Designation = line["pdes"],
-                    Name = line["name"],
-                    Diameter = line["diameter"],
-                    Hazardous = line["pha"],
-                )
-            except Exception as error:
-                print(error)
-            else:
-                neos.append(neo)
+         for row in reader:
+            # Extract relevant fields and create NearEarthObject instances
+            designation = row['designation']
+            name = row['name']
+            diameter = float(row['diameter']) if row['diameter'] else float('nan')  # Handle missing diameter
+            hazardous = row['hazardous'] == 'Y'  # Assuming 'Y' means hazardous, 'N' means not hazardous
+            
+            # Create a NearEarthObject instance
+            neo = NearEarthObject(designation, name, diameter, hazardous)
+            neos.append(neo)
     return neos
    
 
 
-def load_approaches(cad_json_path):
+def load_approaches(cad_json_path: Path) -> List[CloseApproach]:
     """Read close approach data from a JSON file.
 
     :param neo_csv_path: A path to a JSON file containing data about close approaches.
     :return: A collection of `CloseApproach`es.
     """
     
-    with open(cad_json_path, "r") as f:
-        reader = json.load(f)
-        reader = [dict(zip(reader["fields"], data)) for data in reader["data"]]
-        Apps = []
-        for line in reader:
-            try:
-                approach = CloseApproach(
-                    designation=line["des"],
-                    time=line["cd"],
-                    distance=float(line["dist"]),
-                    velocity=float(line["v_rel"]),
-                )
-            except Exception as error:
-                print(error)
-            else:
-                Apps.append(approach)    
-    return Apps
+    approaches = []
+    
+    with open(cad_json_path, mode='r') as jsonfile:
+        data = json.load(jsonfile)  # Parse the JSON file
+        
+        for approach_data in data:
+            # Extract relevant fields and create CloseApproach instances
+            designation = approach_data['designation']
+            time = approach_data['time']  # Assuming time is already in a usable format (e.g., ISO string)
+            distance = float(approach_data['distance'])  # Convert to float
+            velocity = float(approach_data['velocity'])  # Convert to float
+            
+            # Create a CloseApproach instance
+            approach = CloseApproach(designation, time, distance, velocity)
+            approaches.append(approach)
+    
+    return approaches
+
+
+
+
