@@ -35,7 +35,7 @@ def load_neos(neo_csv_path: Path) -> List[NearEarthObject]:
             designation = row['pdes']
             name = row['name']
             diameter = float(row['diameter']) if row['diameter'] else float('nan')  # Handle missing diameter
-            hazardous = row['hazardous'] == 'Y'  # Assuming 'Y' means hazardous, 'N' means not hazardous
+            hazardous = row['pha'] == 'Y'  # Assuming 'Y' means hazardous, 'N' means not hazardous
             
             # Create a NearEarthObject instance
             neo = NearEarthObject(designation, name, diameter, hazardous)
@@ -58,10 +58,10 @@ def load_approaches(cad_json_path: Path) -> List[CloseApproach]:
         
         for approach_data in data:
             # Extract relevant fields and create CloseApproach instances
-            designation = approach_data['designation']
-            time = approach_data['time']  # Assuming time is already in a usable format (e.g., ISO string)
-            distance = float(approach_data['distance'])  # Convert to float
-            velocity = float(approach_data['velocity'])  # Convert to float
+            designation = approach_data['des']
+            time = approach_data['cd']  # Assuming time is already in a usable format (e.g., ISO string)
+            distance = float(approach_data['dist'])  # Convert to float
+            velocity = float(approach_data['v_rel'])  # Convert to float
             
             # Create a CloseApproach instance
             approach = CloseApproach(designation, time, distance, velocity)
